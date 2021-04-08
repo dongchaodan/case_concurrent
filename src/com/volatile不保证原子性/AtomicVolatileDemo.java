@@ -34,5 +34,8 @@ public class AtomicVolatileDemo {
      }
         System.out.println(myAdd.number);
 //        System.out.println(myAdd.atomicInteger);
+
+        Thread thread = new Thread();
+        thread.start();
     }
 }
