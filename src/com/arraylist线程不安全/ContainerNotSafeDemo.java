@@ -1,34 +1,51 @@
 package com.arraylist线程不安全;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
-
 public class ContainerNotSafeDemo {
 
-    public static void main(String[] args) throws InterruptedException {
-//         java.util.ConcurrentModificationException  --线程修改异常
-//                List list = new ArrayList();
-//                List list = new Vector<>();
-//        List<String> list = Collections.synchronizedList(new ArrayList<>());
-                List list = new CopyOnWriteArrayList<>();
+    public static void main(String[] args){
+        int[][] arr = new int[][]{{1, 0, 1, 1, 0}, {1, 0, 0}, {0, 0, 1, 0, 1}, {1, 0, 1, 0, 1}, {1, 0, 1, 1}};
 
-        for (int i = 0; i < 3; i++) {
-            new Thread(() -> {
-                list.add(UUID.randomUUID().toString().substring(0, 8));
-//                list.forEach(System.out::println);
-            }, String.valueOf(i)).start();
+        ContainerNotSafeDemo safeDemo = new ContainerNotSafeDemo();
+        int marx = safeDemo.getMarx(arr);
+        System.out.println(marx);
+    }
+
+    public int getMarx(int[][] arr) {
+        int max = 0;
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[i].length; j++) {
+                int ele = arr[i][j];
+                if (ele == 1) {
+                   int cur = getNumber(arr, i, j);
+                   if(cur > max){
+                       max = cur;
+                   }
+                }
+            }
         }
-        TimeUnit.SECONDS.sleep(5);
-        System.out.println(list);
+        return max;
+    }
 
-//        Set<String> set = new HashSet<>();
-//        set.add("1");
-//        HashMap hashMap = new HashMap();
-//        hashMap.put("","");
-//        ConcurrentHashMap<String,String> concurrentHashMap = new ConcurrentHashMap<String,String>();
-//        concurrentHashMap.put("","");
+    public int getNumber(int [][] arr,int i,int j){
+
+            int num = 1;
+            arr[i][j] = 0;
+            if (i - 1>=0 && arr[i - 1][j]!= 0) {  //上边
+                num += getNumber(arr, i - 1, j);
+            }
+
+            if (i + 1<=arr.length  && arr[i + 1][j] !=0) {  //下边
+                num += getNumber(arr, i + 1, j);
+            }
+
+            if (j - 1>=0 && arr[i][j - 1]!= 0) {   //左边
+                num += getNumber(arr, i, j - 1);
+            }
+
+            if (j + 1<=arr[i].length && arr[i][j + 1]!= 0) {   //右边
+                num += getNumber(arr, i, j + 1);
+            }
+            return num;
     }
 
 }
